@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>TD4 - Panier</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/font-awesome.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+
+    <!-- CLASSES -->
+    <script id="albumsData" type="application/json">
+        [{ "Code": "10", "Titre": "Mozart : Le Nozze di Figaro", "An": "2011", "URL": "http://ecx.images-amazon.com/images/I/51LIHDbHUQL.jpg" },
+            { "Code": "15", "Titre": "Mozart : Intégrale des trios avec piano", "An": "2012", "URL": "http://ecx.images-amazon.com/images/I/41ZTHHNBRKL.jpg" },
+            { "Code": "16", "Titre": "Coltrane : A love supreme", "An": "1978", "URL": "http://ecx.images-amazon.com/images/I/71vq8ZUAmxL._SL1281_.jpg" },
+            { "Code": "11", "Titre": "Atom Heart Mother", "An": "1973", "URL": "http://ecx.images-amazon.com/images/I/81UBy5DIxNL._SL1300_.jpg" },
+            { "Code": "21", "Titre": "Wallflower", "An": "2003", "URL": "http://ecx.images-amazon.com/images/I/510rzLFTI2L.jpg" },
+            { "Code": "29", "Titre": "Chaleur Humaine", "An": "2014", "URL": "http://ecx.images-amazon.com/images/I/51wcEQzibdL.jpg" },
+            { "Code": "53", "Titre": "Rameau : Le grand théâtre de l'amour", "An": "2013","URL": "http://ecx.images-amazon.com/images/I/71SXjNkclGL._SL1500_.jpg" },
+            { "Code": "57", "Titre": "Enfant de la Ville", "An": "2009", "URL": "http://ecx.images-amazon.com/images/I/51J7UYqvXUL.jpg" },
+            { "Code": "82", "Titre": "Unapologetic", "An": "2012", "URL": "http://ecx.images-amazon.com/images/I/71202hkagIL._SL1000_.jpg" }
+        ]
+    </script>
+    <!--SCRIPT PANIER TD2-->
+    <script type="text/javascript">
+        var panierTarget = false;
+        var dragged = null;
+        var albumsMarket = [];
+        var albumsPanier = [];
+
+        function Album(c,t,a,u){
+            this.code = c;
+            this.titre = t;
+            this.annee = a;
+            this.url = u;
+        }
+
+        function AlbumPanier(a,q,p){
+            this.album = a;
+            this.quantite = q;
+            this.prix = p;
+
+            this.total = function () {
+                return this.quantite * this.prix;
+            }
+        }
+
+        function afficherAlbums() {
+            var table = $('#albumTableContent');
+            table.empty();
+            albumsMarket.forEach(function(album){
+                var row = $('<tr>');
+                row.append($('<td><img ' +
+                    'id="' + album.code + '" ' +
+                    'width="100" ' +
+                    'src="' + album.url + '" ' +
+                    'alt="' + album.titre + '" '+
+                    'onmousedown="start_drag(this)" ' +
+                    'ondragend="stop_drag()" ' +
+                    '></td>'));
+                row.append($('<td>'+ album.titre +'</td>'));
+                row.append($('<td>'+ album.annee +'</td>'));
+                table.append(row);
+            });
+        }
+
+        function afficherPanier() {
+            var table = $('#panierContent');
+            var totalValue = 0;
+
+            table.empty();
+            albumsPanier.forEach(function(alb){
+                var row = $('<tr>');
+                row.append($('<td><img id="item' + alb.album.code + '" ' +
+                    'width="100" ' +
+                    'src="' + alb.album.url + '" ' +
+                    'alt="' + alb.album.titre + '" ' +
+                    '></td>'));
+                row.append($('<td>'+ alb.album.titre +'</td>'));
+                row.append($('<td>'+ alb.quantite +'</td>'));
+                row.append($('<td>'+ alb.total() +' €</td>'));
+                table.append(row);
+                totalValue += alb.total();
+            });
+            $('#total').text(totalValue + " €");
+        }
+
+        function start_drag(object) {
+            dragged = object;
+        }
+
+        function stop_drag(){
+            if (panierTarget) {
+                addToPanier();
+            }
+            panierTarget = false;
+        }
+
+        function addToPanier() {
+            if (dragged != null){
+                var id = parseInt(dragged.id.replace("item", ""));
+                var album = findAlbum(id);
+                var found = false;
+                albumsPanier.forEach(function(item){
+                    if (item.album.code === album.code){
+                        item.quantite += 1;
+                        found = true;
+                    }
+                });
+                if (!found){
+                    albumsPanier.push(new AlbumPanier(album, 1, 10)); // 10€ -> prix standard
+                }
+                afficherPanier();
+                dragged = null;
+            }
+        }
+
+        function findAlbum(id) {
+            result = null;
+            albumsMarket.forEach(function (alb) {
+                if (parseInt(alb.code) == parseInt(id)){
+                    result =  alb;
+                }
+            });
+            return result;
+        }
+
+        function allowToPanier() {
+            panierTarget = true;
+        }
+    </script>
+
+    <!-- AJAX & JQUERY -->
+    <script>
+        function callJSONServerPanier() {
+            var letter = $('#letterSelection').val();
+            albumsMarket = [];
+            $.ajax({
+                method: "GET",
+                url: "http://info-timide.iut.u-bordeaux.fr/perso/2017/gnedelec001/TD_Javascript/TD4/panierJSON.php",
+                data: { letter: letter }
+            }).done(function( data ) {
+                if (Array.isArray(data)){
+                    for (var i = 0 ; i < data.length ; i++){
+                        var album = data[i];
+                        var code = album.Code_Album;
+                        var titre = album.Titre_Album;
+                        var annee = album.annee;
+                        var url = 'http://info-timide.iut.u-bordeaux.fr/perso/2017/gnedelec001/TD_Javascript/TD3/imageAlbum.php?Code='+album.Code_Album;
+
+                        albumsMarket.push(new Album(code, titre, annee , url));
+                    }
+                    afficherAlbums();
+                }
+            });
+        }
+    </script>
+</head>
+
+<body id="page-top">
+<nav class="navbar navbar-inverse">
+    <div class="container">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand text-center" href="../index.html">Prog Web (client)</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="../TD1/TD1.html">TD1<span class="sr-only">(current)</span></a></li>
+                <li><a href="../TD2/TD2.html">TD2</a></li>
+                <li class="active"><a href="TD3.html">TD3</a></li>
+                <li><a href="../TD4/TD4.html">TD4</a></li>
+                <li><a href="../TD5/TD5.html">TD5</a></li>
+                <li><a href="../../MiniProjet/index.html">Projet Widget</a></li>
+            </ul>
+        </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+</nav>
+<main class="container" style="margin-bottom: 30px;">
+    <h1 class="text-center">TD4 Exercice panier JQuery</h1>
+    <hr style="margin-bottom: 30px;">
+
+    <div class="row">
+        <div class="well text-center">
+            <h2>Contenu du panier</h2>
+            <div class="table-responsive">
+                <table style="border-style:solid;border-width:1px" id="panierTable" class="table table-bordered">
+                    <thead>
+                    <td style="background-color: rgba(7,180,54,0.4);"><b>Image</b></td>
+                    <td style="background-color: rgba(7,180,54,0.4);"><b>Titre</b></td>
+                    <td style="background-color: rgba(7,180,54,0.4);"><b>Quantite</b></td>
+                    <td style="background-color: rgba(7,180,54,0.4);"><b>Prix</b></td>
+                    </thead>
+                    <tbody id="panierContent">
+                    </tbody>
+                    <tfoot>
+                    <td style="background-color: rgba(215, 66, 44, 0.7);"><b>TOTAL</b></td>
+                    <td style="background-color: rgba(215, 66, 44, 0.7);"></td>
+                    <td style="background-color: rgba(215, 66, 44, 0.7);"></td>
+                    <td style="background-color: rgba(215, 66, 44, 0.7); font-size:18px;" id="total">0.00€</td>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4" id="panier" style="margin-top: 50px;border: 1px solid #222;">
+            <center>
+                <img src="../TD1/caddie.jpg" style="max-width: 100%;" ondragover="allowToPanier()">
+            </center>
+        </div>
+        <div class="col-md-8">
+            <div class="panel panel-default">
+                <div class="panel-heading text-center">BOUTIQUE <br>
+                    <i style="font-size:12px;">(drag and drop l'image de l'album dans le panier pour l'acheter !)</i></div>
+                <div class="panel-body">
+                    <div class="table-responsive text-center">
+                        <div class="form-group">
+                            <div class="col-md-9">
+                                <p><i>Premiere lettre du titre de l'album</i></p>
+                                <select name="letter" id="letterSelection" class="form-control">
+                                    <option>A</option>
+                                    <option>B</option>
+                                    <option>C</option>
+                                    <option>D</option>
+                                    <option>E</option>
+                                    <option>F</option>
+                                    <option>G</option>
+                                    <option>H</option>
+                                    <option>I</option>
+                                    <option>J</option>
+                                    <option>K</option>
+                                    <option>L</option>
+                                    <option>M</option>
+                                    <option>N</option>
+                                    <option>O</option>
+                                    <option>P</option>
+                                    <option>Q</option>
+                                    <option>R</option>
+                                    <option>S</option>
+                                    <option>T</option>
+                                    <option>U</option>
+                                    <option>V</option>
+                                    <option>W</option>
+                                    <option>X</option>
+                                    <option>Y</option>
+                                    <option>Z</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <button href="#" class="btn btn-primary" type="button" onclick="callJSONServerPanier()">Rechercher</button>
+                            </div>
+                        </div>
+                        <br>
+                        <table class="table table-bordered" style="margin-top: 50px;">
+                            <thead>
+                            <td style="background-color: rgba(7,180,54,0.4);"><b>Image</b></td>
+                            <td style="background-color: rgba(7,180,54,0.4);"><b>Titre de l'album</b></td>
+                            <td style="background-color: rgba(7,180,54,0.4);"><b>Année</b></td>
+                            </thead>
+                            <tbody id="albumTableContent">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer class="text-center">
+    <h3>Exercice TD de Guillaume Nedelec</h3>
+    <a href="#page-top" style="font-size:20px;">Retourner en haut de page</a>
+</footer>
+
+</body>
+</html>

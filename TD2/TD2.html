@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>TD2 - JS</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/font-awesome.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+
+    <!-- CLASSES -->
+    <script type="text/javascript">
+        var musiciens = [];
+        var personnes = [];
+        var abonnes = [];
+        function Personne(n,p){
+            this.nom = n;
+            this.prenom = p;
+            this.afficheIdentité = function(){
+                return this.nom + " " + this.prenom;
+            }
+        }
+
+        function Musicien(n,p, i) {
+            this.base =  Personne;
+            this.base(n,p);
+            this.instrument = i;
+            this.details = function(){
+                return Personne.afficheIdentité.call(this)+ " : " + this.instrument;
+            }
+        }
+
+        function Adresse(r, c, v){
+            this.rue = r;
+            this.codePostale = c;
+            this.ville = v;
+            this.details = function(){
+                return this.rue + " " + this.codePostale + " " + this.ville;
+            }
+        }
+
+        function Abonne(n, p, t, r, c, v){
+            this.base = Personne;
+            this.base(n, p);
+            this.telephone = t;
+            this.adresse = new Adresse(r, c, v);
+            this.afficheIdentité = function(){
+                return Personne.afficheIdentité.call(this) + " " + this.adresse.details();
+            }
+        }
+
+        function sommaire() {
+            var divliste = document.getElementById("liens");
+            while (divliste.hasChildNodes()) {
+                divliste.removeChild(divliste.lastChild);
+            }
+            var reps = document.getElementsByClassName("panel-heading");
+            for (i = 0; i < reps.length; i++) {
+                var ligne = document.createElement("p");
+                var link = divliste.ownerDocument.createElement("a");
+                link.appendChild(document.createTextNode(reps[i].textContent));
+                link.setAttribute("href", "#" + reps[i].getAttribute('id'));
+                ligne.appendChild(link);
+                divliste.appendChild(ligne);
+            }
+        }
+    </script>
+</head>
+
+<body id="page-top" onload="initExercices();">
+<nav class="navbar navbar-inverse">
+    <div class="container">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand text-center" href="../index.html">Prog Web (client)</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="../TD1/TD1.html">TD1<span class="sr-only">(current)</span></a></li>
+                <li class="active"><a href="TD2.html">TD2</a></li>
+                <li><a href="../TD3/TD3.html">TD3</a></li>
+                <li><a href="../TD4/TD4.html">TD4</a></li>
+                <li><a href="../TD5/TD5.html">TD5</a></li>
+                <li><a href="../../MiniProjet/index.html">Projet Widget</a></li>
+            </ul>
+        </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+</nav>
+
+<main class="container text-center">
+    <h1 class="text-center">TD2 Traitement des données</h1>
+    <hr style="margin-bottom: 30px;">
+    <div class="row">
+        <h3 id="sommaire">Sommaire</h3>
+        <ul id="liens" class="col-md-12"></ul>
+        <button class="btn btn-primary" onclick="sommaire()">Afficher le sommaire</button>
+    </div>
+
+    <div class="row">
+        <!-- XML -->
+        <div class="col-md-7">
+            <div class="panel panel-default">
+                <div class="panel-heading" id="xml">XML</div>
+                <div class="panel-body">
+                    <table style="border-style:solid;border-width:1px" class="table table-bordered">
+                        <thead>
+                        <td style="background-color: rgba(7,180,54,0.4);"><b>Nom</b></td>
+                        <td style="background-color: rgba(7,180,54,0.4);"><b>Prénom</b></td>
+                        <td style="background-color: rgba(7,180,54,0.4);"><b>Tel</b></td>
+                        <td style="background-color: rgba(7,180,54,0.4);"><b>Adresse</b></td>
+                        <td style="background-color: rgba(7,180,54,0.4);"><b>Code Postale</b></td>
+                        <td style="background-color: rgba(7,180,54,0.4);"><b>Ville</b></td>
+                        </thead>
+                        <tbody id="tb">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- JSON -->
+        <div class="col-md-5">
+            <div class="panel panel-default">
+                <div class="panel-heading" id="json">JSON</div>
+                <div class="panel-body">
+                    <center>
+                        <button style="margin-bottom: 50px;" onclick="afficherMusiciens();" class="btn btn-primary">Afficher la liste des musiciens</button>
+                    </center>
+                    <table class="table table-bordered">
+                        <thead>
+                        <td style="background-color: rgba(7,180,54,0.4);"><b>Numero</b></td>
+                        <td style="background-color: rgba(7,180,54,0.4);"><b>Nom</b></td>
+                        <td style="background-color: rgba(7,180,54,0.4);"><b>Prénom</b></td>
+                        <td style="background-color: rgba(7,180,54,0.4);"><b>Instrument</b></td>
+                        </thead>
+                        <tbody id="musicienContent">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AKOUT ABONNE -->
+    <div class="row">
+        <div class="panel panel-default">
+            <div class="panel-heading" id="addAbo">Ajout Abonné</div>
+            <div class="panel-body">
+                <form class="form-horizontal text-center">
+                    <div class="form-group">
+                        <label for="inputNom" class="col-lg-2 control-label">Nom</label>
+                        <div class="col-lg-10">
+                            <input type="text" class="form-control" id="inputNom" placeholder="Nom" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputPrenom" class="col-lg-2 control-label">Prénom</label>
+                        <div class="col-lg-10">
+                            <input type="text" class="form-control" id="inputPrenom" placeholder="Prénom" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputTel" class="col-lg-2 control-label">Tél</label>
+                        <div class="col-lg-10">
+                            <input type="tel" class="form-control" id="inputTel" placeholder="Tel" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputRue" class="col-lg-2 control-label">Rue</label>
+                        <div class="col-lg-10">
+                            <input type="text" class="form-control" id="inputRue" placeholder="Rue" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputCP" class="col-lg-2 control-label">Code Postal</label>
+                        <div class="col-lg-10">
+                            <input type="text" class="form-control" id="inputCP" placeholder="Code Postal" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputVille" class="col-lg-2 control-label">Ville</label>
+                        <div class="col-lg-10">
+                            <input type="text" class="form-control" id="inputVille" placeholder="Ville" required>
+                        </div>
+                    </div>
+
+
+                    <div class="form-group">
+                        <div class="col-lg-12">
+                            <button type="button" class="btn btn-primary" onclick="insertAbonne()">Submit</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOUT LE MONDE -->
+    <div class="row">
+        <div class="panel panel-default">
+            <div class="panel-heading" id="all">Ensemble des Personnes (Abonnés + Musiciens)</div>
+            <div class="panel-body">
+                <center>
+                    <button style="margin-bottom: 50px;" onclick="afficherPersonnes();" class="btn btn-primary">Afficher la liste des personnes</button>
+                </center>
+                <table class="table table-bordered">
+                    <thead>
+                    <td style="background-color: rgba(7,180,54,0.4);"><b>Nom</b></td>
+                    <td style="background-color: rgba(7,180,54,0.4);"><b>Prénom</b></td>
+                    </thead>
+                    <tbody id="personnesContent">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- EXERCICE PANIER -->
+    <div class="row">
+        <div class="panel panel-default">
+            <div class="panel-heading" id="exo">EXERCICE PANIER</div>
+            <div class="panel-body">
+                <center>
+                    <a href="panier.html">Lien vers l'exercice</a>
+                </center>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<!-- SCRPITS -->
+<script type="text/javascript">
+
+    function initExercices() {
+        afficheExo1();
+        afficheExo2();
+    }
+
+    var data = '<?xml version="1.0" encoding="UTF-8" ?> <GENS> <PERSONNE> <NOM>'+
+        'Bonhomme </NOM> <PRENOM> Flora </PRENOM> <ADRESSE> <RUE> 5 rue Galliéni </RUE><CODE> 75012 </CODE>'+
+        '<VILLE> Paris </VILLE> </ADRESSE> <TEL> 01 23 45 67 89 </TEL>  </PERSONNE>'+
+        '<PERSONNE> <NOM> Gentile </NOM> <PRENOM> Anne </PRENOM><ADRESSE> <RUE> 2 rue des Dames </RUE> <CODE>'+
+        '75007 </CODE> <VILLE> Paris </VILLE> </ADRESSE> <TEL> 01 45 23 67 89 </TEL>'+
+        '</PERSONNE></GENS>';
+
+    <!--EXO 1 -->
+    function afficheExo1() {
+        var parser = new DOMParser();
+        var docXML = parser.parseFromString(data, "application/xml");
+        var reponses = docXML.getElementsByTagName("PERSONNE");
+        for (i = 0; i < reponses.length; i++) {
+            var address = reponses[i].getElementsByTagName("ADRESSE")[0];
+            var abonne = new Abonne(
+                reponses[i].getElementsByTagName("NOM")[0].firstChild.nodeValue,
+                reponses[i].getElementsByTagName("PRENOM")[0].firstChild.nodeValue,
+                reponses[i].getElementsByTagName("TEL")[0].firstChild.nodeValue,
+                address.getElementsByTagName("RUE")[0].firstChild.nodeValue,
+                address.getElementsByTagName("CODE")[0].firstChild.nodeValue,
+                address.getElementsByTagName("VILLE")[0].firstChild.nodeValue
+            );
+            abonnes.push(abonne);
+            personnes.push(abonne);
+        }
+        afficherAbonnes();
+    }
+</script>
+
+<!-- EXO 2 -->
+<script id="music" type="application/json">[{ "Nom_Musicien": "Bacelli",
+    "Prénom_Musicien": "Monica" },
+    { "Nom_Musicien": "Bach", "Prénom_Musicien": "Carl-Philip-Emmanuel" },
+    { "Nom_Musicien": "Bayrakdarian", "Prénom_Musicien":
+    "Isabel" }]
+</script>
+
+<script type="text/javascript">
+    function afficheExo2() {
+        ChargeTableau();
+        // CreeListe();
+    }
+
+    <!-- ANNEXE -->
+    function ChargeTableau() {
+        var Musiciens = JSON.parse(document.getElementById('music').text);
+        Musiciens.forEach(function (mus) {
+            var musicien = new Musicien(mus.Nom_Musicien, mus.Prénom_Musicien, 'Piano');
+            musiciens.push(musicien);
+            personnes.push(musicien);
+        });
+    }
+
+    <!-- AFFICHAGE -->
+    function afficherAbonnes() {
+        var table = document.getElementById("tb");
+        table.innerHTML ="";
+        abonnes.forEach(function (abonne) {
+            var name = document.createTextNode( abonne.nom );
+            var firstname = document.createTextNode(abonne.prenom );
+            var tel = document.createTextNode( abonne.telephone );
+            var street = document.createTextNode( abonne.adresse.rue);
+            var code =document.createTextNode( abonne.adresse.codePostale );
+            var city = document.createTextNode( abonne.adresse.ville );
+            var row = document.createElement('tr');
+            var tdName = document.createElement('td');
+            var tdFirstName = document.createElement('td');
+            var tdTel = document.createElement('td');
+            var tdStreet = document.createElement('td');
+            var tdCode = document.createElement('td');
+            var tdCity = document.createElement('td');
+
+            tdName.appendChild(name);
+            tdFirstName.appendChild(firstname);
+            tdTel.appendChild(tel);
+            tdStreet.appendChild(street);
+            tdCode.appendChild(code);
+            tdCity.appendChild(city);
+            row.appendChild(tdName);
+            row.appendChild(tdFirstName);
+            row.appendChild(tdTel);
+            row.appendChild(tdStreet);
+            row.appendChild(tdCode);
+            row.appendChild(tdCity);
+            table.appendChild(row);
+        });
+    }
+
+    function afficherMusiciens() {
+        var table = document.getElementById("musicienContent");
+        table.innerHTML ="";
+        var i =1;
+        musiciens.forEach(function (mus) {
+            var tr = document.createElement("tr");
+            var td1 = document.createElement("td");
+            var td2 = document.createElement("td");
+            var td3 = document.createElement("td");
+            var td4 = document.createElement("td");
+            td1.appendChild(document.createTextNode(i));
+            td2.appendChild(document.createTextNode(mus.nom));
+            td3.appendChild(document.createTextNode(mus.prenom));
+            td4.appendChild(document.createTextNode(mus.instrument));
+            tr.appendChild(td1);
+            tr.appendChild(td2);
+            tr.appendChild(td3);
+            tr.appendChild(td4);
+            i = i+1;
+            table.appendChild(tr);
+        });
+    }
+
+    function afficherPersonnes() {
+        var table = document.getElementById("personnesContent");
+        table.innerHTML ="";
+        personnes.forEach(function (mus) {
+            var tr = document.createElement("tr");
+            var td1 = document.createElement("td");
+            var td2 = document.createElement("td");
+            td1.appendChild(document.createTextNode(mus.nom));
+            td2.appendChild(document.createTextNode(mus.prenom));
+            tr.appendChild(td1);
+            tr.appendChild(td2);
+            table.appendChild(tr);
+        });
+    }
+
+    function insertAbonne(){
+        var nom = document.getElementById("inputNom").value!=""?document.getElementById("inputNom").value:"Non renseigné";
+        var prenom = document.getElementById("inputPrenom").value!=""?document.getElementById("inputPrenom").value:"Non renseigné";
+        var tel = document.getElementById("inputTel").value!=""?document.getElementById("inputTel").value:"Non renseigné";
+        var rue = document.getElementById("inputRue").value!=""?document.getElementById("inputRue").value:"Non renseigné";
+        var cp = document.getElementById("inputCP").value!=""?document.getElementById("inputCP").value:"Non renseigné";
+        var ville = document.getElementById("inputVille").value!=""?document.getElementById("inputVille").value:"Non renseigné";
+
+        var abonne = new Abonne(nom,prenom,tel,rue,cp,ville);
+        abonnes.push(abonne);
+        personnes.push(abonne);
+        afficherAbonnes();
+        afficherPersonnes();
+    }
+</script>
+
+<footer class="text-center">
+    <h3>Exercice TD de Guillaume Nedelec</h3>
+    <a href="#page-top" style="font-size:20px;">Retourner en haut de page</a>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>TD2 - Panier</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/font-awesome.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+
+    <!-- CLASSES -->
+    <script id="albumsData" type="application/json">
+        [{ "Code": "10", "Titre": "Mozart : Le Nozze di Figaro", "An": "2011", "URL": "http://ecx.images-amazon.com/images/I/51LIHDbHUQL.jpg" },
+            { "Code": "15", "Titre": "Mozart : Intégrale des trios avec piano", "An": "2012", "URL": "http://ecx.images-amazon.com/images/I/41ZTHHNBRKL.jpg" },
+            { "Code": "16", "Titre": "Coltrane : A love supreme", "An": "1978", "URL": "http://ecx.images-amazon.com/images/I/71vq8ZUAmxL._SL1281_.jpg" },
+            { "Code": "11", "Titre": "Atom Heart Mother", "An": "1973", "URL": "http://ecx.images-amazon.com/images/I/81UBy5DIxNL._SL1300_.jpg" },
+            { "Code": "21", "Titre": "Wallflower", "An": "2003", "URL": "http://ecx.images-amazon.com/images/I/510rzLFTI2L.jpg" },
+            { "Code": "29", "Titre": "Chaleur Humaine", "An": "2014", "URL": "http://ecx.images-amazon.com/images/I/51wcEQzibdL.jpg" },
+            { "Code": "53", "Titre": "Rameau : Le grand théâtre de l'amour", "An": "2013","URL": "http://ecx.images-amazon.com/images/I/71SXjNkclGL._SL1500_.jpg" },
+            { "Code": "57", "Titre": "Enfant de la Ville", "An": "2009", "URL": "http://ecx.images-amazon.com/images/I/51J7UYqvXUL.jpg" },
+            { "Code": "82", "Titre": "Unapologetic", "An": "2012", "URL": "http://ecx.images-amazon.com/images/I/71202hkagIL._SL1000_.jpg" }
+        ]
+    </script>
+    <script type="text/javascript">
+
+        var panierTarget = false;
+        var dragged = null;
+        var albumsMarket = [];
+        var albumsPanier = [];
+
+        function Album(c,t,a,u){
+            this.code = c;
+            this.titre = t;
+            this.annee = a;
+            this.url = u;
+        }
+
+        function AlbumPanier(a,q,p){
+            this.album = a;
+            this.quantite = q;
+            this.prix = p;
+
+            this.total = function () {
+                return this.quantite * this.prix;
+            }
+        }
+
+        function loadPage() {
+            loadData();
+            afficherAlbums();
+        }
+
+        function loadData() {
+            var Albums = JSON.parse(document.getElementById('albumsData').text);
+            Albums.forEach(function (alb) {
+                var album = new Album(alb.Code, alb.Titre, alb.An, alb.URL);
+                albumsMarket.push(album);
+            });
+        }
+
+        function afficherAlbums() {
+            var table = document.getElementById("albumTableContent");
+            table.innerHTML ="";
+            albumsMarket.forEach(function (alb) {
+                var cover = new Image;
+                cover.src = alb.url;
+                cover.width = 100;
+                cover.alt = alb.titre;
+                cover.id = alb.code;
+                cover.onmousedown = start_drag;
+                cover.ondragend = stop_drag;
+
+                var tr = document.createElement("tr");
+                var image = document.createElement("td");
+                var titre = document.createElement("td");
+                var annee = document.createElement("td");
+
+                image.appendChild(cover);
+                titre.appendChild(document.createTextNode(alb.titre));
+                annee.appendChild(document.createTextNode(alb.annee));
+                tr.appendChild(image);
+                tr.appendChild(titre);
+                tr.appendChild(annee);
+                table.appendChild(tr);
+            });
+        }
+
+        function afficherPanier() {
+            var table = document.getElementById("panierContent");
+            var total = document.getElementById('total');
+            table.innerHTML ="";
+            var totalValue = 0;
+            albumsPanier.forEach(function (alb) {
+                var cover = new Image;
+                cover.src = alb.album.url;
+                cover.width = 100;
+                cover.alt = alb.album.titre;
+                cover.id = alb.album.code;
+
+                var tr = document.createElement("tr");
+                var image = document.createElement("td");
+                var titre = document.createElement("td");
+                var quantite = document.createElement("td");
+                var prix = document.createElement("td");
+
+                image.appendChild(cover);
+                titre.appendChild(document.createTextNode(alb.album.titre));
+                quantite.appendChild(document.createTextNode(alb.quantite));
+                prix.appendChild(document.createTextNode(alb.prix + "€"));
+                tr.appendChild(image);
+                tr.appendChild(titre);
+                tr.appendChild(quantite);
+                tr.appendChild(prix);
+                table.appendChild(tr);
+                totalValue += alb.total();
+            });
+            total.innerHTML = totalValue + " €";
+        }
+
+        function start_drag(object) {
+            dragged = object.target;
+        }
+        function stop_drag(){
+            if (panierTarget) {
+                addToPanier();
+            }
+            panierTarget = false;
+        }
+
+        function addToPanier() {
+            if (dragged != null){
+                var id = parseInt(dragged.id.replace('item', ''));
+                var album = findAlbum(id);
+
+                if (album != null){
+                    var found = false;
+                    albumsPanier.forEach(function(item){
+                        if (item.album.code == album.code){
+                            item.quantite += 1;
+                            found = true;
+                        }
+                    });
+                    if (!found){
+                        albumsPanier.push(new AlbumPanier(album, 1, 10));
+                    }
+                    afficherPanier();
+                }
+                dragged = null;
+            }
+        }
+
+        function findAlbum(id) {
+            result = null;
+            albumsMarket.forEach(function (alb) {
+                if (parseInt(alb.code) == parseInt(id)){
+                    result =  alb;
+                }
+            });
+            return result;
+        }
+
+        function allowToPanier() {
+            panierTarget = true;
+        }
+    </script>
+</head>
+
+<body id="page-top" onload="loadPage();">
+<nav class="navbar navbar-inverse">
+    <div class="container">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand text-center" href="../index.html">Prog Web (client)</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="../TD1/TD1.html">TD1<span class="sr-only">(current)</span></a></li>
+                <li class="active"><a href="TD2.html">TD2</a></li>
+                <li><a href="../TD3/TD3.html">TD3</a></li>
+                <li><a href="../TD4/TD4.html">TD4</a></li>
+                <li><a href="../TD5/TD5.html">TD5</a></li>
+                <li><a href="../../MiniProjet/index.html">Projet Widget</a></li>
+            </ul>
+        </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+</nav>
+<main class="container" style="margin-bottom: 30px;">
+    <h1 class="text-center">TD2 Exercice panier</h1>
+    <hr style="margin-bottom: 30px;">
+
+    <div class="row">
+        <div class="well text-center">
+            <h2>Contenu du panier</h2>
+            <div class="table-responsive">
+                <table style="border-style:solid;border-width:1px" id="panierTable" class="table table-bordered">
+                    <thead>
+                    <td style="background-color: rgba(7,180,54,0.4);"><b>Image</b></td>
+                    <td style="background-color: rgba(7,180,54,0.4);"><b>Titre</b></td>
+                    <td style="background-color: rgba(7,180,54,0.4);"><b>Quantite</b></td>
+                    <td style="background-color: rgba(7,180,54,0.4);"><b>Prix</b></td>
+                    </thead>
+                    <tbody id="panierContent">
+                    </tbody>
+                    <tfoot>
+                    <td style="background-color: rgba(215, 66, 44, 0.7);"><b>TOTAL</b></td>
+                    <td style="background-color: rgba(215, 66, 44, 0.7);"></td>
+                    <td style="background-color: rgba(215, 66, 44, 0.7);"></td>
+                    <td style="background-color: rgba(215, 66, 44, 0.7); font-size:18px;" id="total">0.00€</td>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4" id="panier" style="margin-top: 50px;border: 1px solid #222;">
+            <center>
+                <img src="../TD1/caddie.jpg" style="max-width: 100%;" ondragover="allowToPanier()">
+            </center>
+        </div>
+        <div class="col-md-8">
+            <div class="panel panel-default">
+                <div class="panel-heading text-center">BOUTIQUE <br>
+                <i style="font-size:12px;">(drag and drop l'image de l'album dans le panier pour l'acheter !)</i></div>
+                <div class="panel-body">
+                    <div class="table-responsive text-center">
+                        <table class="table table-bordered">
+                            <thead>
+                            <td style="background-color: rgba(7,180,54,0.4);"><b>Image</b></td>
+                            <td style="background-color: rgba(7,180,54,0.4);"><b>Titre de l'album</b></td>
+                            <td style="background-color: rgba(7,180,54,0.4);"><b>Année</b></td>
+                            </thead>
+                            <tbody id="albumTableContent">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer class="text-center">
+    <h3>Exercice TD de Guillaume Nedelec</h3>
+    <a href="#page-top" style="font-size:20px;">Retourner en haut de page</a>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>TD1 - Exercice</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/font-awesome.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+
+
+    <script type="application/javascript">
+        var dragged = null;
+
+        function start_drag(objet)
+        {
+            dragged = objet;
+        }
+        function drag_onmousemove(event){
+            var x = event.clientX;
+            var y = event.clientY;
+            document.getElementById('coordonnes').value = x + ', ' + y;
+            if( dragged )
+            {
+                dragged.style.position = 'absolute';
+                dragged.style.left = (x) + 'px';
+                dragged.style.top = (y) + 'px';
+            }
+        }
+        function drag_onmouseup(event) {
+            if (dragged) {
+                var cartElem = document.getElementById("panier");
+                var mainElem = document.getElementById("main");
+
+                var style = window.getComputedStyle(cartElem, null);
+                var style2 = window.getComputedStyle(mainElem, null);
+
+                var width = parseFloat( style.width.replace('px', ''));
+                var left = parseFloat(style2.marginLeft.replace('px', ''));
+                var height = parseFloat(style.height.replace('px', ''));
+                var top = 145;
+
+                if (event.clientX >= left
+                    && event.clientY <= height + top
+                    && event.clientX <= left+width
+                    && event.clientY >= top)
+                {
+                    document.getElementById("nbProduit").innerHTML = parseInt(document.getElementById("nbProduit").innerHTML) + 1;
+                }
+            }
+            var d = document.getElementById('drag');
+            d.style.position = "absolute";
+            d.style.left = 40+'%';
+            d.style.top = 600+'px';
+
+            dragged = null;
+        }
+        function addEvent(obj,event,fct)
+        {
+            if( obj.attachEvent)
+                obj.attachEvent('on' + event,fct);
+            else
+                obj.addEventListener(event,fct,true);
+        }
+        addEvent(document,'mousemove',drag_onmousemove);
+        addEvent(document,'mouseup',drag_onmouseup);
+    </script>
+
+</head>
+<body id="page-top">
+<nav class="navbar navbar-inverse">
+    <div class="container">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand text-center" href="../index.html">Prog Web (client)</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <li class="active"><a href="TD1.html">TD1<span class="sr-only">(current)</span></a></li>
+                <li><a href="../TD2/TD2.html">TD2</a></li>
+                <li><a href="../TD3/TD3.html">TD3</a></li>
+                <li><a href="../TD4/TD4.html">TD4</a></li>
+                <li><a href="../TD5/TD5.html">TD5</a></li>
+                <li><a href="../../MiniProjet/index.html">Projet Widget</a></li>
+
+            </ul>
+        </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+</nav>
+<main id="main" class="container" style="min-height: 700px;">
+    <h1 class="text-center">TD1 -Exercice Déplacement</h1>
+    <hr style="margin-bottom: 30px;">
+
+    <div class="row" style="margin-right: 50px;">
+        <center>
+            <div class="col-md-12">
+                Coordonnées de la souris :
+                <input type="text" id="coordonnes" value="inconnues" readonly="readonly" style="width: 90px" />
+            </div>
+        </center>
+    </div>
+    <div class="row">
+        <div id="panier" class="panel panel-default">
+            <div class="panel-heading" id="moveEx">Panier  <span id="nbProduit" class="badge">0</span> </div>
+            <div class="panel-body">
+                <center>
+                    <img src="caddie.jpg" style="max-width: 150px;">
+                </center>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <center>
+            <div id="drag" style="border: 2px solid black; height: 100px; width: 100px;" onmousedown="start_drag(this,event);">ARTICLE</div>
+        </center>
+    </div>
+</main>
+<footer class="text-center">
+    <h3>Exercice TD de Guillaume Nedelec</h3>
+    <a href="#page-top" style="font-size:20px;">Retourner en haut de page</a>
+</footer>
+
+</body>
+</html>

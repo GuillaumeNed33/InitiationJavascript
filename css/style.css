@@ -1,0 +1,40 @@
+.navbar {
+  border-radius: 0;
+}
+h4 {
+  margin-top : 15px;
+}
+
+#accueil .panel-body {
+  height: 290px;
+}
+
+#firstLine .panel-body {
+  height: 150px;
+}
+
+.panel {
+  margin-top: 50px;
+  border-color: #222;
+}
+
+.panel-default > .panel-heading {
+  background-color: #444;
+  color: #fff;
+  font-weight: bold;
+  font-size: 28px;
+}
+.panel-body {
+  padding: 50px;
+}
+
+.index li {
+  margin-bottom: 10px;
+}
+footer {
+  background-color: #222;
+  color: #fff;
+  height: 200px;
+  width: 100%;
+  padding:30px;
+}

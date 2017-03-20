@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>TD1 - JS</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../css/bootstrap.min.css">
+  <link rel="stylesheet" href="../css/font-awesome.min.css">
+  <link rel="stylesheet" href="../css/style.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+  <script src="../js/bootstrap.min.js"></script>
+</head>
+<!--onload="alert('Bonjour');"-->
+<body id="page-top">
+<nav class="navbar navbar-inverse">
+  <div class="container">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand text-center" href="../index.html">Prog Web (client)</a>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav navbar-right">
+        <li class="active"><a href="TD1.html">TD1<span class="sr-only">(current)</span></a></li>
+        <li><a href="../TD2/TD2.html">TD2</a></li>
+        <li><a href="../TD3/TD3.html">TD3</a></li>
+        <li><a href="../TD4/TD4.html">TD4</a></li>
+        <li><a href="../TD5/TD5.html">TD5</a></li>
+        <li><a href="../../MiniProjet/index.html">Projet Widget</a></li>
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+
+
+<main class="container text-center">
+  <h1 class="text-center">TD1 - Javascript / DOM / CSS</h1>
+  <hr style="margin-bottom: 30px;">
+  <div class="row">
+    <h3 id="sommaire">Sommaire</h3>
+    <ul id="liens" class="col-md-12"></ul>
+    <button class="btn btn-primary" onclick="sommaire()">Afficher le sommaire</button>
+  </div>
+
+  <!-- EXERCICE 1 : EVENEMENTS -->
+  <div class="row">
+    <div class="panel panel-default">
+      <div class="panel-heading" id="EventEx">Exercice Evénements</div>
+      <div class="panel-body">
+        <h4>Hello world</h4>
+        <input type="button" value="Hello" onclick=" alert('Hello World'); " />
+        <h4>Modification d'attributs</h4>
+        <a href="#" onclick=' this.style.fontStyle = "italic "'>Premier lien</a>
+        <a href="#" onclick=" this.style.backgroundColor = 'rgba(105,105,255,0.6)' ">Second lien</a>
+        <h4>Avant-arrière</h4>
+        <input type="button" value="Back" onclick=" window.history.back() ">
+        <input type="button" value="Forward" onclick=" window.history.forward() ">
+        <h4>Fenêtre</h4>
+        <input type="button" value="Ouvrir" onclick="codeNewPage();">
+        <input type="button" value="Fermer" onclick="closeMyWindow();">
+
+        <script type="text/javascript">
+            var myWindow;
+            function codeNewPage() {
+                myWindow = window.open('','','menubar=yes, scrollbars=yes, top=100, left=100, width=300, height=200');
+                myWindow.document.write("<p>Hey, c'est une nouvelle fenêtre ! :)</p>");
+            }
+            function closeMyWindow()
+            {
+                myWindow.close();
+            }
+        </script>
+      </div>
+    </div>
+  </div>
+
+  <!-- EXERCICE 2 : SAISIE -->
+  <div class="row">
+    <div class="panel panel-default">
+      <div class="panel-heading" id="SaisieEx">Exercice de Saisie</div>
+      <div class="panel-body">
+        <form action="" method="get" name="formSaisie">
+          <p>
+            <label for="nombre1">Saisissez un nombre :</label>
+            <input type="number" name="nombre1" /><br>
+            <label for="nombre2">Saisissez un nombre :</label>
+            <input type="number" name="nombre2" />
+            <br>
+            <input style="margin-top: 15px;" type="submit" value="Ok" onclick="calcul();" />
+          </p>
+        </form>
+        <script type="text/javascript">
+            function calcul() {
+                if(document.formSaisie.nombre1.value != "" && document.formSaisie.nombre2.value != "") {
+                    var res = parseInt(document.formSaisie.nombre1.value) + parseInt(document.formSaisie.nombre2.value);
+                    alert(document.formSaisie.nombre1.value + ' + ' + document.formSaisie.nombre2.value + ' = ' + res);
+                }
+                else {
+                    alert("Mauvaise saisie des champs");
+                }
+            }
+        </script>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- EXERCICE 3 : CALCUL -->
+  <div class="row">
+    <div class="panel panel-default">
+      <div class="panel-heading" id="CalcEx">Exercice de Calcul</div>
+      <div class="panel-body">
+        <input type="number" id="Op1" />&nbsp;<input type="number" id="Op2" /><br/>
+        <div style="margin-top:25px;margin-bottom:25px;">
+          <input type="button" value="+" onclick=" add(); " />
+          <input type="button" value="-" onclick=" less(); " />
+          <input type="button" value="/" onclick=" div(); " />
+          <input type="button" value="x" onclick=" mul(); " />
+        </div>
+        <br>
+        <input type="text" id="Resultat" />
+
+        <script type="text/javascript">
+            function add() {
+                var x = parseFloat(document.getElementById("Op1").value);
+                var y = parseFloat(document.getElementById("Op2").value);
+                var r = document.getElementById("Resultat");
+                r.value = x + y;
+            }
+            function less() {
+                var x = parseFloat(document.getElementById("Op1").value);
+                var y = parseFloat(document.getElementById("Op2").value);
+                var r = document.getElementById("Resultat");
+                r.value = x - y;
+            }
+            function mul() {
+                var x = parseFloat(document.getElementById("Op1").value);
+                var y = parseFloat(document.getElementById("Op2").value);
+                var r = document.getElementById("Resultat");
+                r.value = x * y;
+            }
+            function div() {
+                var x = parseFloat(document.getElementById("Op1").value);
+                var y = parseFloat(document.getElementById("Op2").value);
+                var r = document.getElementById("Resultat");
+                if(y != 0)
+                    r.value = x / y;
+                else {
+                    r.value = "Erreur - division par 0";
+                }
+            }
+        </script>
+      </div>
+    </div>
+  </div>
+
+  <!-- EXERCICE 4 : SOMMAIRE -->
+  <div class="row">
+    <div class="panel panel-default">
+      <div class="panel-heading" id="sommaireEx">Creation d'un Sommaire</div>
+      <div class="panel-body">
+        <a type="button" class="btn btn-primaty" href="#sommaire">Créer Sommaire</a>
+        <script type="text/javascript">
+            function sommaire() {
+                var divliste = document.getElementById("liens");
+                while (divliste.hasChildNodes()) {
+                    divliste.removeChild(divliste.lastChild);
+                }
+                var reps = document.getElementsByClassName("panel-heading");
+                for (i = 0; i < reps.length; i++) {
+                    var ligne = document.createElement("p");
+                    var link = divliste.ownerDocument.createElement("a");
+                    link.appendChild(document.createTextNode(reps[i].textContent));
+                    link.setAttribute("href", "#" + reps[i].getAttribute('id'));
+                    ligne.appendChild(link);
+                    divliste.appendChild(ligne);
+                }
+            }
+        </script>
+      </div>
+    </div>
+  </div>
+
+  <!-- EXERCICE 5 : CREATION DE TABLEAU -->
+  <div class="row">
+    <div class="panel panel-default">
+      <div class="panel-heading" id="StructEx">Creation d'une structure</div>
+      <div class="panel-body">
+        <button class="btn btn-primary" class="btn btn-primary" onclick="createTab()">Créer un tableau</button>
+        <button class="btn btn-primary" class="btn btn-primary" onclick="addLine()">Ajouter une ligne</button>
+        <button class="btn btn-primary" class="btn btn-primary" onclick="addColumn()">Ajouter une colonne</button>
+
+        <style>
+          table, th, td {
+            border: 1px solid black;
+            padding: 5px;
+          }
+        </style>
+
+        <center><div id="divForTable" style="margin-top:25px;"></div></center>
+        <script type="text/javascript">
+            function createTab(){
+                var container = document.getElementById("divForTable");
+                var tab = document.getElementById("table");
+                if (tab != null) {
+                    container.removeChild(tab);
+                }
+                tab = document.createElement("table");
+                tab.setAttribute("id", "table");
+                container.appendChild(tab);
+                addLine();
+            }
+            function addLine(){
+                var tab = document.getElementById("table");
+                if (tab != null){
+                    var row = document.createElement("tr");
+                    tab.appendChild(row)
+                    var rows = tab.children;
+                    if (rows.length > 1){
+                        var nbColumn = rows[0].children.length;
+                        for (var column = 0 ; column < nbColumn ; column ++){
+                            addColumnToRow(row, rows.length, column+1);
+                        }
+                    } else {
+                        console.log("lol");
+                        addColumnToRow(row, 1, 1);
+                    }
+                } else {
+                    alert("Aucun tableau");
+                }
+            }
+            function addColumn(){
+                var tab = document.getElementById("table");
+                var rows = tab.children;
+                console.log(rows);
+                if (rows.length > 0){
+                    for (var line = 0 ; line < rows.length ; line++){
+                        addColumnToRow(rows[line], line+1, rows[line].children.length+1);
+                    }
+                } else {
+                    addLine();
+                }
+            }
+            function addColumnToRow(row, line, column){
+                if (row != undefined){
+                    var cell = document.createElement("td");
+                    cell.innerHTML = prompt("Texte de la cellule (" + line + ";" + column + ") : ");
+                    row.appendChild(cell);
+                }
+            }
+        </script>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- EXERCICE 6 : MODIFICATION DE CONTROLE -->
+  <div class="row">
+    <style type="text/css">
+      span { color: blue; }
+      .italique { font-style: italic; color: blue; }
+    </style>
+
+    <div class="panel panel-default">
+      <div class="panel-heading" id="NatureEx">Modification de la nature d'un controle</div>
+      <div class="panel-body">
+        <p class="italique"> Les valeurs en bleu sont modifiables (double clic)</p>
+        <div>
+          <form action="">
+            <p>Nom : <span id="nomE6" ondblclick="passerEnSaisie('nomE6')">Dupont</span></p>
+            <p>Prénom : <span id="prenomE6" ondblclick="passerEnSaisie('prenomE6')">Jean</span></p>
+            <p><input class="btn btn-primary" type="button" value="Valider" onclick="validateEditions()"></p>
+          </form>
+        </div>
+        <script type="text/javascript">
+            function passerEnSaisie(id) {
+                var span = document.getElementById(id);
+                var para = span.parentNode;
+                var input = document.createElement("input");
+                para.replaceChild(input,span);
+                input.value = span.firstChild.nodeValue;
+                input.id=id;
+                input.focus();
+            }
+            function applyEditions(input){
+                var id = input.id;
+                var value = input.value;
+                var parent = input.parentNode;
+                var span = document.createElement("span");
+                span.innerHTML = value;
+                span.id=id;
+                parent.replaceChild(span,input);
+            }
+
+            function validateEditions(){
+                var firstname = document.getElementById("prenomE6");
+                var name = document.getElementById("nomE6");
+                if (name.tagName == "INPUT"){
+                    applyEditions(name)
+                }
+                if (prenomE6.tagName == "INPUT"){
+                    applyEditions(firstname);
+                }
+            }
+        </script>
+      </div>
+    </div>
+  </div>
+
+  <!-- EXERCICE 7 : DEPLACEMENT -->
+  <div class="row">
+    <div class="panel panel-default">
+      <div class="panel-heading" id="moveEx">Déplacement d'objets</div>
+      <div class="panel-body">
+        <a href="deplacement.html">Lien vers l'exercice</a>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer class="text-center">
+  <h3>Exercice TD de Guillaume Nedelec</h3>
+  <a href="#page-top" style="font-size:20px;">Retourner en haut de page</a>
+</footer>
+
+</body>
+</html>

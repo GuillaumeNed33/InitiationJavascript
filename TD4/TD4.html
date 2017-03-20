@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>TD4 - JS</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/font-awesome.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script type="text/javascript">
+        function sommaire() {
+            var divliste = document.getElementById("liens");
+            while (divliste.hasChildNodes()) {
+                divliste.removeChild(divliste.lastChild);
+            }
+            var reps = document.getElementsByClassName("panel-heading");
+            for (i = 0; i < reps.length; i++) {
+                var ligne = document.createElement("p");
+                var link = divliste.ownerDocument.createElement("a");
+                link.appendChild(document.createTextNode(reps[i].textContent));
+                link.setAttribute("href", "#" + reps[i].getAttribute('id'));
+                ligne.appendChild(link);
+                divliste.appendChild(ligne);
+            }
+        }
+    </script>
+
+    <!-- EXERCICE 1 -->
+    <script>
+        $(document).ready(function () {
+            $('#linkExo1').click(function (e) {
+                alert(e.target.text);
+            });
+        });
+    </script>
+
+    <!--EXERCICE 2 -->
+    <script>
+        $(document).ready(function () {
+            $('.targetExo2 span').click(function () {
+                if($(this).text() == "Bouton vert : Cliquez !") {
+                    $(this).css('color', 'red');
+                    $(this).css('border-color', 'red');
+                    $(this).css('border-radius', '20px');
+                    $(this).text("Bouton rouge : Cliquez !");
+                }
+                else {
+                    $(this).css('color', 'green');
+                    $(this).css('border', '1px solid green');
+                    $(this).css('border-radius', '0px');
+                    $(this).css('background-color', 'azure');
+                    $(this).text("Bouton vert : Cliquez !");
+                }
+            });
+        });
+    </script>
+    <style>
+        .targetExo2 span {
+            border: 1px solid green;
+            color: green;
+            padding: 10px;
+            background-color: azure;
+        }
+    </style>
+
+    <!-- EXERCICE 3 -->
+    <script>
+        $(document).ready(function () {
+            var i = 0;
+            $('#bouton1').bind('click', function () {
+                var newDiv = $('#div1').clone();
+                newDiv.attr('id',i++);
+                newDiv.append($('<input>').attr('type','button').attr('class','btn btn-default').attr('value', 'Suppr').mouseup(function () {$(this).parent().remove();}));
+                newDiv.append('<h2 class="text-center">Div '+i+'</h2>');
+                newDiv.insertAfter($(this));
+            });
+        });
+    </script>
+    <style>
+        .target {
+            border-width: 2px;
+            border-style: solid;
+            width: 200px;
+            height: 100px;
+            background-color: aqua;
+        }
+    </style>
+
+    <!-- partie sommaire -->
+    <script type="text/javascript">
+        function displayTitleTable(){
+            $('#titleTable').innerHTML = "";
+            var titles = $('.panel-heading');
+            for (var i = 0; i < titles.length ; i++){
+                var title = $(titles[i]);
+                var id = $(title).attr('id');
+                $('#titleTable').append('<a href="#' + id + '"><li class="list-group-item">' + title.text() + '</li></a>');
+            }
+        }
+    </script>
+
+    <!-- EXERCICE 4 (POP-UP)-->
+    <script type="text/javascript" language="javascript">
+        function clonage(){
+            var elem = $($(this).parent().clone());
+            elem.attr('id', elem.attr('id') + '_');
+            elem.attr('left', elem.css('left').replace('px', ''));
+            elem.attr('top', elem.css('left').replace('px', ''));
+
+            elem.appendTo($('body'));
+            move(elem,
+                parseInt(elem.css('top').replace('px', '')) + 120,
+                parseInt(elem.css('left').replace('px', '')) + 10
+            );
+
+            var elem2 = $($(this).parent().clone());
+            elem2.attr('id', elem2.attr('id') + '__');
+            elem2.attr('left', elem2.css('left').replace('px', ''));
+            elem2.attr('top', elem2.css('left').replace('px', ''));
+
+            elem2.appendTo($('body'));
+            move(elem2,
+                parseInt(elem2.css('top').replace('px', '')) + 20,
+                parseInt(elem2.css('left').replace('px', '')) + 190
+            );
+
+            $(".close_message").click(clonage);
+        }
+
+        function move(elem, top, left){
+            elem.animate({
+                top: top + "px",
+                left: left + "px",
+            }, 2000).fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100);
+        }
+
+        $(document).ready(function () {
+            $("#object").appendTo('body');
+            move($("#object"), 75, 30);
+            $(".close_message").click(clonage);
+        });
+    </script>
+    <style type="text/css">
+        .message {
+            border: 1px solid #CCCCCC;
+            position: absolute;
+            width: 150px;
+            border: 1px solid #c93;
+            background: #ffc;
+            padding: 5px;
+            left: 0px;
+            top: -170px;
+        }
+    </style>
+
+    <!-- EXERCICE 4 (IMAGES) -->
+    <script>
+        $(document).ready(function(){
+            $('.img').click(function(){
+                $(this).animate({height:"128px", width:"128px"},1000);
+            });
+        });
+    </script>
+    <style>
+        #images img{height:64px;width:64px;vertical-align:middle;}
+        #images{line-height:150px;}
+    </style>
+
+    <!-- EXERCICE 5 (ANGULAR) -->
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.saisie').bind('keydown', function (event) {
+                var id = $(this).attr('id');
+                $("body").find("span").each(function () {
+                    if ($(this).attr('ng-model') == id) {
+                        $(this).text($('#'+id).val()).css('visibility', 'visible');
+                    }
+                });
+            });
+            window.onload = function() {
+                $("body").find("span").each(function () {
+                    if ($(this).attr('ng-model'))
+                        $(this).css('visibility', 'hidden');
+                });
+            }
+        });
+    </script>
+</head>
+
+<body id="page-top">
+<nav class="navbar navbar-inverse">
+    <div class="container">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand text-center" href="../index.html">Prog Web (client)</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="../TD1/TD1.html">TD1<span class="sr-only">(current)</span></a></li>
+                <li><a href="../TD2/TD2.html">TD2</a></li>
+                <li><a href="../TD3/TD3.html">TD3</a></li>
+                <li class="active"><a href="TD4.html">TD4</a></li>
+                <li><a href="../TD5/TD5.html">TD5</a></li>
+                <li><a href="../../MiniProjet/index.html">Projet Widget</a></li>
+            </ul>
+        </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+</nav>
+<main class="container" style="margin-bottom: 30px;">
+    <h1 class="text-center">TD4 JQuery</h1>
+    <hr style="margin-bottom: 30px;">
+
+    <div class="row text-center">
+        <h3 id="sommaire">Sommaire</h3>
+        <ul id="liens" class="col-md-12"></ul>
+        <button class="btn btn-primary" onclick="sommaire()">Afficher le sommaire</button>
+    </div>
+
+    <div class="row" id="firstLine">
+        <div class="col-md-6">
+            <div class="panel panel-default text-center">
+                <div class="panel-heading" id="event">Evenements</div>
+                <div class="panel-body">
+                    <a href="#" id="linkExo1" class="btn btn-primary">Cliquez ici !</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="panel panel-default text-center">
+                <div class="panel-heading" id="cssManip">Manipulation CSS</div>
+                <div class="panel-body">
+                    <div class="targetExo2">
+                        <span>Bouton vert : Cliquez !</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="panel panel-default text-center">
+            <div class="panel-heading" id="domManip">Manipulation DOM</div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="row">
+                            <center>
+                                <div class="col-md-12">
+                                    <button onclick="displayTitleTable()" class="btn btn-warning col-sm-12">Afficher le sommaire</button>
+                                </div>
+                            </center>
+                        </div>
+                        <div class="row">
+                            <center>
+                                <div class="col-md-12">
+                                    <ul id="titleTable" class="list-group"></ul>
+                                </div>
+                            </center>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <center>
+                            <input id="bouton1" type="button" class="btn btn-default" value="Clone div">
+                            <div id="div1" class="target"></div>
+                        </center>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="panel panel-default text-center">
+            <div class="panel-heading" id="anim">Animation</div>
+            <div class="panel-body">
+                <div class="row">
+                    <div id="object" class="message">
+                        <img class="close_message" style="float:right;cursor:pointer;max-width: 25px" src="cross.png" />
+                        <strong>Offre publicitaire pénible </strong>
+                        <p>Ce message ne disparaîtra que si vous appuyez sur la petite croix!</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <p>Cliquez sur les images pour visualiser l'animation.</p>
+                    <div id="images">
+                        <img class="img" alt="" src="http://ecx.images-amazon.com/images/I/51LIHDbHUQL.jpg">
+                        <img class="img" alt="" src="http://ecx.images-amazon.com/images/I/41ZTHHNBRKL.jpg">
+                        <img class="img" alt="" src="http://ecx.images-amazon.com/images/I/71vq8ZUAmxL._SL1281_.jpg">
+                        <img class="img" alt="" src="http://ecx.images-amazon.com/images/I/81UBy5DIxNL._SL1300_.jpg">
+                        <img class="img" alt="" src="http://ecx.images-amazon.com/images/I/510rzLFTI2L.jpg">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="panel panel-default text-center">
+            <div class="panel-heading" id="ajax">jQuery et Ajax</div>
+            <div class="panel-body">
+                <a href="panierJquery.html">Exercice du panier avec Ajax et Jquery</a>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="panel panel-default text-center">
+            <div class="panel-heading" id="angular">Emulation de techniques AngularJS</div>
+            <div class="panel-body">
+                <h3>
+                    Modification grâce à un "custom attribute" (à la <em>"AngularJS"</em>)
+                </h3>
+                <input class="saisie" id="nom" type="text" placeholder="Saisissez votre nom" />
+                <input class="saisie" id="prenom" type="text" placeholder="Saisissez votre prenom" />
+                <h1>
+                    <span ng-model="nom">{{nom}}</span>
+                    <span ng-model="prenom">{{prenom}}</span>
+                </h1>
+            </div>
+        </div>
+    </div>
+</main>
+<footer class="text-center">
+    <h3>Exercice TD de Guillaume Nedelec</h3>
+    <a href="#page-top" style="font-size:20px;">Retourner en haut de page</a>
+</footer>
+</body>
+</html>

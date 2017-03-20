@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>TD3 - JS</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/font-awesome.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <!--SOMMAIRE-->
+    <script type="text/javascript">
+        function sommaire() {
+            var divliste = document.getElementById("liens");
+            while (divliste.hasChildNodes()) {
+                divliste.removeChild(divliste.lastChild);
+            }
+            var reps = document.getElementsByClassName("panel-heading");
+            for (i = 0; i < reps.length; i++) {
+                var ligne = document.createElement("p");
+                var link = divliste.ownerDocument.createElement("a");
+                link.appendChild(document.createTextNode(reps[i].textContent));
+                link.setAttribute("href", "#" + reps[i].getAttribute('id'));
+                ligne.appendChild(link);
+                divliste.appendChild(ligne);
+            }
+        }
+    </script>
+
+
+    <!-- SCRIPT XML EXO1 -->
+    <script type="text/javascript">
+        var requeteAjax;
+        function connectXML(page) {
+            requeteAjax = new XMLHttpRequest();
+            if (requeteAjax != null) {
+                requeteAjax.open("GET", page, true);
+                requeteAjax.onreadystatechange = handlerXML;
+                requeteAjax.send();
+            }
+            else {
+                window.alert("Pas de support AJAX (XMLHTTP)");
+            }
+        }
+        function handlerXML() {
+            if (requeteAjax.readyState === 4) {
+                if (requeteAjax.status === 200) {
+                    displayXML();
+                }
+            }
+        }
+        function callXML() {
+            connectXML("donnees.xml");
+        }
+        function displayXML() {
+
+            var docXml = requeteAjax.responseXML;
+            var reponses = docXml.getElementsByTagName("MUSICIEN");
+            var divliste = document.getElementById("musiciensXML");
+
+            for (i = 0; i < reponses.length; i++) {
+                var texte = "";
+                var name = reponses[i].getElementsByTagName("NOM");
+                if (name.length > 0 ){
+                    texte += name[0].textContent + "  ";
+                }
+                var firstname = reponses[i].getElementsByTagName("PRENOM");
+                if (firstname.length > 0 ){
+                    texte += firstname[0].textContent + "  ";
+                }
+                var phone = reponses[i].getElementsByTagName("TEL");
+                if (phone.length > 0 ){
+                    texte += ": " + phone[0].textContent;
+                }
+
+                var row = document.createElement('li');
+                row.className = "list-group-item";
+                row.innerHTML = texte
+                divliste.appendChild(row);
+            }
+            divliste.style.visibility = "visible";
+        }
+    </script>
+
+    <!-- SCRIPT JSON EXO2 -->
+    <script type="text/javascript">
+        var requeteAjaxJSON;
+        function connectJSON(page) {
+            requeteAjaxJSON = new XMLHttpRequest();
+            if (requeteAjaxJSON != null) {
+                requeteAjaxJSON.open("GET", page, true);
+                requeteAjaxJSON.onreadystatechange = handlerJSON;
+                requeteAjaxJSON.send();
+            }
+            else {
+                window.alert("Pas de support AJAX (JSON)");
+            }
+        }
+
+        function callJSON() {
+            connectJSON("donnees.json");
+        }
+
+        function handlerJSON() {
+            if (requeteAjaxJSON.readyState === 4) {
+                if (requeteAjaxJSON.status === 200) {
+                    displayJSON()
+                }
+            }
+        }
+        function displayJSON() {
+            var docJSON = JSON.parse(requeteAjaxJSON.responseText);
+            var divliste = document.getElementById("musiciensJSON");
+
+            for (var i = 0 ; i< docJSON.length ; i++){
+                var musician = docJSON[i];
+
+
+                var texte = "";
+                if (musician.Nom_Musicien != undefined){
+                    texte += musician.Nom_Musicien + " ";
+                }
+
+                if (musician.Prenom_Musicien != undefined){
+                    texte += musician.Prenom_Musicien + " ";
+                }
+
+                var row = document.createElement('li');
+                row.className = "list-group-item";
+                row.innerHTML = texte;
+                divliste.appendChild(row);
+            }
+
+            divliste.style.visibility = "visible";
+        }
+    </script>
+
+    <!-- SCRIPT XMLSERVEUR EXO3 -->
+    <script type="text/javascript">
+
+        function callXMLServer() {
+            var requeteAjaxXMLServer;
+            var url = "http://info-timide.iut.u-bordeaux.fr/perso/2017/gnedelec001/TD_Javascript/TD3/donneesXML.php";
+            var letter = document.getElementById('letterSelection').value;
+            requeteAjaxXMLServer = new XMLHttpRequest();
+            if (requeteAjaxXMLServer != null) {
+                requeteAjaxXMLServer.open("GET", url + "?initiale=" + letter, true);
+
+                requeteAjaxXMLServer.onreadystatechange = function(){
+                    if (requeteAjaxXMLServer.readyState === 4) {
+                        if (requeteAjaxXMLServer.status === 200) {
+                            displayXMLServer(requeteAjaxXMLServer)
+                        }
+                    }
+                };
+                requeteAjaxXMLServer.send();
+            }
+            else {
+                window.alert("Pas de support AJAX (XMLHTTP)");
+            }
+        }
+
+        function displayXMLServer(data) {
+            var docXml = data.responseXML;
+            var reponses = docXml.getElementsByTagName("MUSICIEN");
+            var listeXml = document.getElementById("listXmlServ");
+            listeXml.innerHTML = "";
+
+            for (i = 0; i < reponses.length; i++) {
+                var texte = "";
+                // name
+                var name = reponses[i].getElementsByTagName("NOM");
+                if (name.length > 0 ){
+                    texte += '<span>' +  name[0].textContent + '</span>';
+                }
+
+                // firstname
+                var firstname = reponses[i].getElementsByTagName("PRENOM");
+                if (firstname.length > 0 ){
+                    texte += '<span> ' + firstname[0].textContent + '</span>';
+                }
+
+                var row = document.createElement('li');
+                row.className = "list-group-item";
+                row.innerHTML = texte;
+                listeXml.appendChild(row);
+            }
+            listeXml.style.visibility = "visible";
+        }
+    </script>
+
+    <!-- SCRIPT JSONSERVEUR EXO4 -->
+    <script type="text/javascript">
+
+        function callJSONServer() {
+            var requeteAjaxJSONServer;
+            var url = "http://info-timide.iut.u-bordeaux.fr/perso/2017/gnedelec001/TD_Javascript/TD3/donneesJSON.php";
+            var letter = document.getElementById('letterSelection').value;
+            requeteAjaxJSONServer = new XMLHttpRequest();
+            if (requeteAjaxJSONServer != null) {
+                requeteAjaxJSONServer.open("GET", url + "?initiale=" + letter, true);
+
+                requeteAjaxJSONServer.onreadystatechange = function(){
+                    if (requeteAjaxJSONServer.readyState === 4) {
+                        if (requeteAjaxJSONServer.status === 200) {
+                            displayJSONServer(requeteAjaxJSONServer)
+                        }
+                    }
+                };
+                requeteAjaxJSONServer.send();
+            }
+            else {
+                window.alert("Pas de support AJAX (XMLHTTP)");
+            }
+        }
+
+        function displayJSONServer(data) {
+            var result = data.responseText.replace('[', '');
+            result = result.replace(']', '');
+            console.log(data.responseText);
+            var docJSON = JSON.parse(data.responseText);
+            var divliste = document.getElementById("listJsonServ");
+
+            for (var i = 0 ; i< docJSON.length ; i++){
+                var musician = docJSON[i];
+                var texte = "";
+
+                if (musician.Nom_Musicien != undefined){
+                    texte += '<span>' + musician.Nom_Musicien + '</span>';
+                }
+
+                if (musician.prenom != undefined){
+                    texte += '<span> ' + musician.prenom + '</span>';
+                }
+
+                var row = document.createElement('li');
+                row.className = "list-group-item";
+                row.innerHTML = texte;
+                divliste.appendChild(row);
+            }
+            divliste.style.visibility = "visible";
+        }
+    </script>
+
+</head>
+<body id="page-top">
+<nav class="navbar navbar-inverse">
+    <div class="container">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand text-center" href="../index.html">Prog Web (client)</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="../TD1/TD1.html">TD1<span class="sr-only">(current)</span></a></li>
+                <li><a href="../TD2/TD2.html">TD2</a></li>
+                <li class="active"><a href="TD3.html">TD3</a></li>
+                <li><a href="../TD4/TD4.html">TD4</a></li>
+                <li><a href="../TD5/TD5.html">TD5</a></li>
+                <li><a href="../../MiniProjet/index.html">Projet Widget</a></li>
+            </ul>
+        </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+</nav>
+<main class="container" style="margin-bottom: 30px;">
+    <h1 class="text-center">TD3 AJAX</h1>
+    <hr style="margin-bottom: 30px;">
+
+    <div class="row text-center">
+        <h3 id="sommaire">Sommaire</h3>
+        <ul id="liens" class="col-md-12"></ul>
+        <button class="btn btn-primary" onclick="sommaire()">Afficher le sommaire</button>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="panel panel-default text-center">
+                <div class="panel-heading" id="xml">Affichage de données via XML</div>
+                <div class="panel-body">
+                    <form action="">
+                        <input id="ButtonXML" type="button" class="btn btn-primary" value="Appeler XML" onclick="callXML()" />
+                    </form>
+                    <div style="margin-top:25px;">
+                        <ul id="musiciensXML" class="list-group" name="a" cols="20" style="visibility:hidden"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="panel panel-default text-center">
+                <div class="panel-heading" id="json">Affichage de données via JSON</div>
+                <div class="panel-body">
+                    <form action="">
+                        <input id="ButtonJSON" type="button" class="btn btn-primary" value="Appeler JSON" onclick="callJSON()" />
+                    </form>
+                    <div style="margin-top:25px;">
+                        <ul id="musiciensJSON" class="list-group" name="a" cols="20" style="visibility:hidden"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-default text-center">
+                <div class="panel-heading" id="server">Appel de données depuis le serveur</div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <select name="letter" id="letterSelection" class="form-control">
+                            <option>A</option>
+                            <option>B</option>
+                            <option>C</option>
+                            <option>D</option>
+                            <option>E</option>
+                            <option>F</option>
+                            <option>G</option>
+                            <option>H</option>
+                            <option>I</option>
+                            <option>J</option>
+                            <option>K</option>
+                            <option>L</option>
+                            <option>M</option>
+                            <option>N</option>
+                            <option>O</option>
+                            <option>P</option>
+                            <option>Q</option>
+                            <option>R</option>
+                            <option>S</option>
+                            <option>T</option>
+                            <option>U</option>
+                            <option>V</option>
+                            <option>W</option>
+                            <option>X</option>
+                            <option>Y</option>
+                            <option>Z</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <form action="">
+                            <input id="xmlServ" type="button" class="btn btn-primary" value="Appeler XML depuis le Serveur" onclick="callXMLServer()" />
+                        </form>
+                        <div style="margin-top:25px;">
+                            <ul id="listXmlServ" class="list-group" name="a" cols="20" style="visibility:hidden"></ul>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <form action="">
+                            <input id="JsonServ" type="button" class="btn btn-primary" value="Appeler JSON depuis le Serveur" onclick="callJSONServer()" />
+                        </form>
+                        <div style="margin-top:25px;">
+                            <ul id="listJsonServ" class="list-group" name="a" cols="20" style="visibility:hidden"></ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="panel panel-default text-center">
+            <div class="panel-heading" id="exoPanier">Exercice Panier (Appel AJAX)</div>
+            <div class="panel-body">
+                <a href="panierAJAX.html">Lien vers l'exercice du panier</a>
+            </div>
+        </div>
+    </div>
+</main>
+<footer class="text-center">
+    <h3>Exercice TD de Guillaume Nedelec</h3>
+    <a href="#page-top" style="font-size:20px;">Retourner en haut de page</a>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,11 @@
+{
+  "article": [
+    {"nom":"Farine", "prix":0.58, "quantite": 375, "unite":"g"},
+    {"nom":"Sucre", "prix":1.20, "quantite": 50, "unite":"g"},
+    {"nom":"Oeufs", "prix":0.15, "quantite": 4, "unite":"u"},
+    {"nom":"Lait", "prix":0.79, "quantite": 50, "unite":"cl"},
+    {"nom":"Beurre", "prix":7.9, "quantite": 20, "unite":"g"}
+  ],
+  "personnes" : 2,
+  "titre" : "La Recette Ajax des crèpes bretonnes !"
+}
