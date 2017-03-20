@@ -3,5 +3,5 @@ Site regroupant l'ensemble des TD de JavaScript réalisés  à l'IUTT Indormatiq
 Notions abordées : 
  - Javascipt
  - AJAX
- -JQuery
+ - JQuery
  - AngularJS
